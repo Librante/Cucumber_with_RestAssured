@@ -1,0 +1,17 @@
+apply plugin: 'java'
+
+project.ext {
+    cucumberVersion = '5.4.0'
+    restAssuredVersion= '4.2.0'
+}
+
+dependencies {
+    testImplementation 'io.cucumber:cucumber-java:' + cucumberVersion
+    testImplementation 'io.cucumber:cucumber-junit:' + cucumberVersion
+    testImplementation 'io.rest-assured:rest-assured:' + restAssuredVersion
+
+}
+
+repositories {
+    mavenCentral()
+}
