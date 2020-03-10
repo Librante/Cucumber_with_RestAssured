@@ -6,6 +6,7 @@ public class DataStorage {
 
     private static String deck_id;
     private static Response response;
+    private static String pileName;
 
 
 
@@ -17,11 +18,21 @@ public class DataStorage {
         this.response = response;
     }
 
+    public void setPileName(String pileName) {
+        this.pileName = pileName;
+
+
+    }
+
     public String getDeck_id (){
         return deck_id;
     }
 
     public Response getResponse(){
         return response;
+    }
+
+    public String getPileName(){
+        return pileName;
     }
 }

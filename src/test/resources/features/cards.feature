@@ -11,8 +11,8 @@ Feature: Cards
       | 42     | 10              |
 @wip
     Scenario: User creates deck containing only aces and player can receive only aces from this deck
-      Given the user creates the new pile of cards with only "Aces"
-      And the deck contains <4> cards
-#      When the user shuffles the existing pile
-#      And the user deals "<4>" cards
-#      Then the player receives only "Aces" in dealing
+  Given the user creates the new deck of cards with only "Aces"
+      And the user deals "4" cards
+      And the player have a new pile with "Aces"
+      When the player reviews his cards in "Aces" pile
+      Then the player sees only "Aces" in dealing

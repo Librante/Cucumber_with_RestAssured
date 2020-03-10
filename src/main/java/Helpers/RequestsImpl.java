@@ -5,7 +5,9 @@ import io.restassured.parsing.Parser;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -34,5 +36,10 @@ public class RequestsImpl {
     public static Object receiveJsonValueFromResponse(Response response, String value){
         JsonPath jsonPath = response.jsonPath();
         return jsonPath.get(value);
+    }
+
+    public static List<Object> receiveJsonValuesAsListFromResponse(Response response, String value) {
+
+        return response.jsonPath().getList(value);
     }
 }
