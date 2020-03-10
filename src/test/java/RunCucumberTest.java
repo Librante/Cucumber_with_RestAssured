@@ -6,7 +6,8 @@ import org.junit.runner.RunWith;
 @CucumberOptions(
         plugin = {"pretty"},
         features={"classpath:features"},
-glue = {"StepDefinitions"})
+glue = {"StepDefinitions"},
+tags = {"@wip"})
 
 public class RunCucumberTest {
 }
