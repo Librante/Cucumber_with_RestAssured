@@ -1,13 +1,14 @@
 package StepDefinitions;
 
-import Helpers.Constants;
-import Helpers.RequestsImpl;
-import Helpers.DataStorage;
+import Helpers.*;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.response.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertTrue;
@@ -15,52 +16,68 @@ import static org.junit.Assert.assertTrue;
 import java.util.*;
 
 public class StepDefinitions {
+    private static final Logger LOGGER = LoggerFactory.getLogger(StepDefinitions.class);
+    private static HashMap<String, Response> responseAsMap = new HashMap<String, Response>();
 
-RequestsImpl request = new RequestsImpl();
-DataStorage dataStorage = new DataStorage();
+    RequestsImpl request = new RequestsImpl();
+    DataStorage dataStorage = new DataStorage();
+    SetEnv setEnv = new SetEnv();
+    JsonParsers jsonParsers = new JsonParsers();
+
+
+    @Given("the user starts card game")
+    public void theUserStartsCardGame() {
+        setEnv.defineBaseURLFromPropertiesFile();
+    }
 
     @Given("the user shuffles the new deck of cards")
     public void theUserShufflesTheNewDeckOfCards() {
-        Response response = request.GetRequest(Constants.BASE_URL+ Constants.NEW_DECK);
-        String desk_id = (String) request.receiveJsonValueFromResponse(response,"deck_id");
+        Response response = request.GetRequest(dataStorage.getBaseURL() + Constants.NEW_DECK);
+        String desk_id = (String) jsonParsers.receiveJsonValueFromResponse(response, "deck_id");
         dataStorage.setDeck_id(desk_id);
-        System.out.println(dataStorage.getDeck_id());
+        LOGGER.info("desk_id is: ", desk_id);
     }
 
+    /**
+     * @param numberOfCardsToDraw Received Response is saved in to ways:
+     *                            One is sets to the hashMap of responses and can be called then by request shorten name (see Constants,
+     *                            i.e key "DRAW_CARDS" will return response for DRAW_CARD request)
+     *                            Simply saved response will be override by next request response
+     */
     @When("the user deals {string} cards")
     public void theUserDrawsCards(String numberOfCardsToDraw) {
         Map<String, String> queryParams = new HashMap();
         queryParams.put("deck_id", dataStorage.getDeck_id());
         queryParams.put("count", numberOfCardsToDraw);
-        Response response = request.GetRequestWithQueryParam(Constants.BASE_URL+ Constants.DRAW_CARDS, queryParams);
+        Response response = request.GetRequestWithQueryParam(dataStorage.getBaseURL() + Constants.DRAW_CARDS, queryParams);
+        responseAsMap.put("DRAW_CARDS", response);
+        dataStorage.setResponseAsMap(responseAsMap);
         dataStorage.setResponse(response);
     }
 
-    @Then("the deck contains <{int}> cards")
-    public void theRemainingDeskContainsCards(int remainingCards) {
-        int cardsRemains = (Integer) request.receiveJsonValueFromResponse(dataStorage.getResponse(),"remaining");
-        assertThat(cardsRemains, is (remainingCards));
+    @Then("the deck contains {string} cards")
+    public void theRemainingDeskContainsCards(String remainingCards) {
+        Integer cardsRemains = (Integer) jsonParsers.receiveJsonValueFromResponse(dataStorage.getResponseAsMap().get("DRAW_CARDS"), "remaining");
+        assertThat(cardsRemains, is(Integer.valueOf(remainingCards)));
     }
 
 
     @Given("the user creates the new deck of cards with only {string}")
     public void theUserCreatesTheNewPileOfCardsWithOnly(String dealingParam) {
-       String cards = "";
-        switch (dealingParam){
-            case("Aces"):
-            cards = Constants.ALL_ACES;
+        String cards = "";
+        switch (dealingParam) {
+            case ("Aces"):
+                cards = Constants.ALL_ACES;
+                break;
+            default:
+                LOGGER.info("User do not defines params for card dealing");
         }
         Map<String, String> queryParams = new HashMap();
         queryParams.put("cards", cards);
-        Response response = request.GetRequestWithQueryParam(Constants.BASE_URL+ Constants.DRAW_SPECIFIC_CARDS, queryParams);
-        dataStorage.setDeck_id((String) request.receiveJsonValueFromResponse(response,"deck_id"));
+        Response response = request.GetRequestWithQueryParam(dataStorage.getBaseURL() + Constants.DRAW_SPECIFIC_CARDS, queryParams);
+        dataStorage.setDeck_id((String) jsonParsers.receiveJsonValueFromResponse(response, "deck_id"));
         dataStorage.setResponse(response);
-        System.out.println(response.asString());
-    }
-
-    @Then("the player receives only {string} in dealing")
-    public void thePlayerReceivesOnlyInDealing(String expectingCardsInDeals) {
-        System.out.println(dataStorage.getResponse().asString());
+        responseAsMap.put("DRAW_SPECIFIC_CARDS", response);
     }
 
     @When("the player reviews his cards in {string} pile")
@@ -68,9 +85,9 @@ DataStorage dataStorage = new DataStorage();
         Map<String, String> queryParams = new HashMap();
         queryParams.put("pile_name", pileName);
         queryParams.put("deck_id", dataStorage.getDeck_id());
-        Response response = request.GetRequestWithQueryParam(Constants.BASE_URL+ Constants.LIST_SPECIFIC_PILE, queryParams);
+        Response response = request.GetRequestWithQueryParam(dataStorage.getBaseURL() + Constants.LIST_SPECIFIC_PILE, queryParams);
         dataStorage.setResponse(response);
-        System.out.println(response.asString());
+        responseAsMap.put("LIST_SPECIFIC_PILE", response);
     }
 
     @Then("the player have a new pile with {string}")
@@ -79,7 +96,7 @@ DataStorage dataStorage = new DataStorage();
         switch (pileName) {
             case ("Aces"):
                 cardsInPile = Constants.ALL_ACES;
-        break;
+                break;
             case ("allCards"):
                 cardsInPile = Constants.ALL_CARDS;
                 break;
@@ -87,35 +104,34 @@ DataStorage dataStorage = new DataStorage();
                 cardsInPile = pileName;
                 pileName = "randomPile";
         }
+        dataStorage.setPileName(pileName);
         Map<String, String> queryParams = new HashMap();
         queryParams.put("cards", cardsInPile);
         queryParams.put("deck_id", dataStorage.getDeck_id());
-        queryParams.put("pile_name",pileName);
-
-        Response response = request.GetRequestWithQueryParam(Constants.BASE_URL+ Constants.CREATE_SPECIFIC_PILE, queryParams);
+        queryParams.put("pile_name", pileName);
+        Response response = request.GetRequestWithQueryParam(dataStorage.getBaseURL() + Constants.CREATE_SPECIFIC_PILE, queryParams);
         dataStorage.setResponse(response);
-        dataStorage.setPileName(pileName);
-        System.out.println(response.asString());
-
+        responseAsMap.put("CREATE_SPECIFIC_PILE", response);
     }
 
     @Then("the player sees only {string} in dealing of {string} pile")
     public void thePlayerSeesOnlyInDealing(String expectedCards, String pileName) {
         String cardsInPile = "";
+        String cardValue = "";
         switch (expectedCards) {
             case ("Aces"):
                 cardsInPile = Constants.ALL_ACES;
+                cardValue = "ACE";
+                break;
         }
         String[] strParts = cardsInPile.split(",");
         ArrayList<String> cardsReceivedInDeal = new ArrayList<>(Arrays.asList(strParts));
-
-        List<Object> values = request.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(),"piles."+pileName+".cards.value");
-        List<Object> codes = request.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(),"piles."+pileName+".cards.code");
+        List<Object> values = jsonParsers.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(), "piles." + pileName + ".cards.value");
+        List<Object> codes = jsonParsers.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(), "piles." + pileName + ".cards.code");
         assertThat(cardsReceivedInDeal, is(codes));
-        assertTrue (values.stream().allMatch(v -> v.equals("ACE")));
-        System.out.println(values);
-        System.out.println(codes);
-
+        String finalCardValue = cardValue;
+        assertTrue("I'm expecting to see " + cardValue + " in pile, but receiving " + values,
+                values.stream().allMatch(v -> v.equals(finalCardValue)));
     }
 
 
@@ -124,31 +140,29 @@ DataStorage dataStorage = new DataStorage();
         Map<String, String> queryParams = new HashMap();
         queryParams.put("cards", cardsToDraw);
         queryParams.put("deck_id", dataStorage.getDeck_id());
-        queryParams.put("whereToDraw",fromWhereToDrawCards);
+        queryParams.put("whereToDraw", fromWhereToDrawCards);
         queryParams.put("pileName", pileName);
-        Response response = request.GetRequestWithQueryParam(Constants.BASE_URL+ Constants.DRAW_FROM_THE_DECK_BOTTOM, queryParams);
-
-        System.out.println(response.asString());
+        Response response = request.GetRequestWithQueryParam(dataStorage.getBaseURL() + Constants.DRAW_FROM_THE_DECK_BOTTOM, queryParams);
+        responseAsMap.put("DRAW_FROM_THE_DECK_BOTTOM", response);
     }
 
     @Then("the pile {string} contains <{int}> cards")
     public void thePileContainsCards(String pileName, int countOfCards) {
-
-        int cardsRemains = (Integer) request.receiveJsonValueFromResponse(dataStorage.getResponse(),"piles."+pileName+".remaining");
+        int cardsRemains = (Integer) jsonParsers.receiveJsonValueFromResponse(dataStorage.getResponse(), "piles." + pileName + ".remaining");
         assertThat(cardsRemains, is(countOfCards));
     }
 
     @And("the pile {string} do not contains {string} cards in it")
     public void thePileAllCardsDoNotContainsCardsInIt(String pileName, String cardsToBeExcluded) {
-        List<Object> codes = request.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(),"piles."+pileName+".cards.code");
-        System.out.println(codes);
+        List<Object> codes = jsonParsers.receiveJsonValuesAsListFromResponse(dataStorage.getResponse(), "piles." + pileName + ".cards.code");
         String[] strParts = cardsToBeExcluded.split(",");
         ArrayList<String> cardsReceivedInDeal = new ArrayList<>(Arrays.asList(strParts));
-        System.out.println(cardsReceivedInDeal);
-        for (String cardEx: cardsReceivedInDeal){
-        assertTrue("For " +cardEx + "something get wrong",
-                codes.stream().noneMatch(v -> v.equals(cardEx)));
- }
+        for (String cardEx : cardsReceivedInDeal) {
+            assertTrue("For " + cardEx + "something went wrong",
+                    codes.stream().noneMatch(v -> v.equals(cardEx)));
+        }
     }
+
+
 }
 
