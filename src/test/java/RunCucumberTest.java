@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
-        plugin = {"pretty"},
+        plugin = {"pretty", "html:build/cucumber", "json:build/cucumber.json"},
         features={"classpath:features"},
 glue = {"assignment/stepdefinitions"},
 tags = {"@cards"})

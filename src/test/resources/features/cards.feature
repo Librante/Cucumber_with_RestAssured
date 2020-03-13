@@ -14,7 +14,7 @@ Feature: Cards
 
   Scenario Outline: User creates pile containing only aces and player can receive only aces from a deal
     Given the user starts card game
-    When the user creates the new deck of cards with only "Aces"
+    When the user creates the new deck of cards with only "<pileName>"
     And the user deals "4" cards
     Then the player have a new pile with "<pileName>"
     When the player reviews his cards in "<pileName>" pile
@@ -24,7 +24,7 @@ Feature: Cards
       | Aces     |
 
 
-    #User can draw specific cards only from a pile, not from the deck as was described in task
+    #User can draw specific cards only from a pile, not from the deck as was described in the task
   Scenario Outline: User draws 5 specific cards from a bottom of pile and checks remaining cards in the deck
     Given the user starts card game
     When the user shuffles the new deck of cards

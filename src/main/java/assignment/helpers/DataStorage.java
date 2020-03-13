@@ -28,10 +28,6 @@ public class DataStorage {
         this.pileName = pileName;
     }
 
-    public void setResponseAsMap(HashMap<String, Response> responseAsMap) {
-        this.responseAsMap = responseAsMap;
-    }
-
     public void addResponseToMap(String key, Response response) {
         responseAsMap.put(key, response);
     }

@@ -5,11 +5,20 @@ public class Constants {
     public static final String NEW_DECK = "new/shuffle/?deck_count=1";
     public static final String DRAW_CARDS_FROM_DECK = "{deck_id}/draw/?count={count}";
     public static final String DRAW_SPECIFIC_CARDS = "new/shuffle/?cards={cards}";
-    public static final String DRAW_FROM_THE_DECK_BOTTOM = "{deck_id}/pile/{pileName}/draw/{whereToDraw}/?cards={cards}";
-
+    public static final String DRAW_FROM_THE_PILE = "{deck_id}/pile/{pile_name}/draw/{from_where_draw}/?cards={cards}";
     public static final String CREATE_SPECIFIC_PILE = "{deck_id}/pile/{pile_name}/add/?cards={cards}";
-
     public static final String LIST_SPECIFIC_PILE = "{deck_id}/pile/{pile_name}/list/";
+
+    //Field and Json values names
+    public static final String DECK_ID = "deck_id";
+    public static final String COUNT = "count";
+    public static final String CARDS = "cards";
+    public static final String PILE_NAME = "pile_name";
+
+
+
+    public static final String JSON_VALUE_REMAINING = "remaining";
+
 
     //Cards
     public static final String ALL_ACES = "AH,AC,AD,AS";
