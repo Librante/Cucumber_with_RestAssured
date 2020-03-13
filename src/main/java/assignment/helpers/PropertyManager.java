@@ -1,4 +1,4 @@
-package Helpers;
+package assignment.helpers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +16,8 @@ import java.util.Properties;
 public final class PropertyManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropertyManager.class);
-    private static Properties properties = new Properties();
-    private static String environment = System.getProperty("env");
+    private static final Properties properties = new Properties();
+    private static final String environment = System.getProperty("env");
     private static final String PROPERTIES = System.getProperty("user.dir") + "/src/main/resources/" + environment + ".properties";
 
 

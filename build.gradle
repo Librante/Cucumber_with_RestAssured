@@ -1,17 +1,28 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 
 project.ext {
     cucumberVersion = '5.4.0'
-    restAssuredVersion= '4.2.0'
+    restAssuredVersion = '4.2.0'
+    slf4jVersion = '1.7.30'
+    junitVersion = '4.13'
+    hamcrestVersion = '2.2'
 }
 
 dependencies {
-    testImplementation 'io.cucumber:cucumber-java:' + cucumberVersion
-    testImplementation 'io.cucumber:cucumber-junit:' + cucumberVersion
-    testImplementation 'io.rest-assured:rest-assured:' + restAssuredVersion
-
+    testCompile 'io.cucumber:cucumber-java:' + cucumberVersion
+    testCompile 'io.cucumber:cucumber-junit:' + cucumberVersion
+    compile 'io.rest-assured:rest-assured:' + restAssuredVersion
+    compile 'io.rest-assured:json-path:' + restAssuredVersion
+    compile 'org.slf4j:slf4j-log4j12:' + slf4jVersion
+    compile 'junit:junit:' + junitVersion
+    testCompile 'org.hamcrest:hamcrest-library:' + hamcrestVersion
 }
 
 repositories {
     mavenCentral()
+}
+
+test {
+    systemProperty "env", System.getProperty("env")
 }

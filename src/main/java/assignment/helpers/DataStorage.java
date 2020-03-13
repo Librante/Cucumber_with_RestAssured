@@ -1,23 +1,20 @@
-package Helpers;
+package assignment.helpers;
 
 import io.restassured.response.Response;
 
 import java.util.HashMap;
-import java.util.Map;
 
 public class DataStorage {
 
-    private static String deck_id;
-    private static Response response;
-    private static String pileName;
-    private static String baseURL;
-    private static HashMap <String, Response> responseAsMap;
-
+    private String deck_id;
+    private Response response;
+    private String pileName;
+    private String baseURL;
+    private HashMap <String, Response> responseAsMap = new HashMap<>();
 
     public void setBaseURL(String baseURL) {
         this.baseURL = baseURL;
     }
-
 
     public void setDeck_id (String newDeck_id){
         this.deck_id = newDeck_id;
@@ -33,6 +30,10 @@ public class DataStorage {
 
     public void setResponseAsMap(HashMap<String, Response> responseAsMap) {
         this.responseAsMap = responseAsMap;
+    }
+
+    public void addResponseToMap(String key, Response response) {
+        responseAsMap.put(key, response);
     }
 
     public String getDeck_id (){

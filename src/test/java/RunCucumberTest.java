@@ -9,12 +9,12 @@ import org.slf4j.LoggerFactory;
 @CucumberOptions(
         plugin = {"pretty"},
         features={"classpath:features"},
-glue = {"StepDefinitions"},
+glue = {"assignment/stepdefinitions"},
 tags = {"@cards"})
 
 public class RunCucumberTest {
 
-    static Logger LOGGER = LoggerFactory.getLogger(RunCucumberTest.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(RunCucumberTest.class);
 
     @BeforeClass
     public static void setUp() {

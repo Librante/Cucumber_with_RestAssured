@@ -1,11 +1,10 @@
-package Helpers;
+package assignment.helpers;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 
-import java.util.List;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;

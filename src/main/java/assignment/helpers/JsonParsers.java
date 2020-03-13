@@ -1,4 +1,4 @@
-package Helpers;
+package assignment.helpers;
 
 import io.restassured.response.Response;
 
