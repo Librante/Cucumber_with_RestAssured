@@ -23,7 +23,6 @@ Feature: Cards
       | pileName |
       | Aces     |
 
-
     #User can draw specific cards only from a pile, not from the deck as was described in the task
   Scenario Outline: User draws 5 specific cards from a bottom of pile and checks remaining cards in the deck
     Given the user starts card game

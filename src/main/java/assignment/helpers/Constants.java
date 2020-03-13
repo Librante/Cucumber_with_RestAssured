@@ -15,8 +15,6 @@ public class Constants {
     public static final String CARDS = "cards";
     public static final String PILE_NAME = "pile_name";
 
-
-
     public static final String JSON_VALUE_REMAINING = "remaining";
 
 

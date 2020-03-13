@@ -20,8 +20,6 @@ public final class PropertyManager {
     private static final String environment = System.getProperty("env");
     private static final String PROPERTIES = System.getProperty("user.dir") + "/src/main/resources/" + environment + ".properties";
 
-
-
     static {
         File file = new File(PROPERTIES);
         LOGGER.info(file.getAbsolutePath());
